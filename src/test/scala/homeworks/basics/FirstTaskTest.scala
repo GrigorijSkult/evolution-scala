@@ -14,7 +14,7 @@ class FirstTaskTest extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks {
   }
 
   "Zero greatest common divisor" should "be correct" in {
-    gcd(0, 0) shouldEqual 0 //or better to throw exception ?
+    gcd(0, 0) shouldEqual 0
     gcd(5, 0) shouldEqual 5
     gcd(0, 15) shouldEqual 15
   }
