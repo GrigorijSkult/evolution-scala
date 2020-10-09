@@ -1,11 +1,11 @@
 package homeworks.basics
 
-import homeworks.basics.FourthTaskDataStructures._
+import homeworks.basics.Task4._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class FourthTaskDataStructuresTest extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks {
+class Task4Test extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks {
 
   "Basic Map - List Test" should "be correct" in {
     val inputMap = Map(

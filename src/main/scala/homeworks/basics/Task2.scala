@@ -1,9 +1,9 @@
 package homeworks.basics
 
-object SecondTaskClassesAndTraits {
+object Task2 {
 
   /*
-  * Homework:
+  * Homework:ClassesAndTraits
   *
   * 2D shapes: circle, rectangle, square and (triangle - unimplemented)
   * with `area` methods

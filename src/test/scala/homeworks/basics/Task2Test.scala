@@ -1,11 +1,11 @@
 package homeworks.basics
 
-import homeworks.basics.SecondTaskClassesAndTraits._
+import homeworks.basics.Task2._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class SecondTaskClassesAndTraitsTest extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks {
+class Task2Test extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks {
 
   "MoveTwoDimensional" should "be correct" in {
     var circle = Circle.apply(1.2, 2.4, 5)

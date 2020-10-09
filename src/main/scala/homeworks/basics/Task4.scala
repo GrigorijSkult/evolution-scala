@@ -1,8 +1,8 @@
 package homeworks.basics
 
-object FourthTaskDataStructures {
+object Task4 {
 
-  // Homework
+  // Homework: DataStructures
   //
   // Implement a special sort which sorts the keys of a map (K) according to their associated
   // values (V).
@@ -22,10 +22,10 @@ object FourthTaskDataStructures {
 
   def sortConsideringEqualValues[T](map: Map[T, Int]): List[(Set[T], Int)] = {
     map
-    .groupBy { case (_, value) => value }
+    .groupBy { case (_, value)  => value }
       .toList
-    .map { case (key, values) => (values.keySet, key) }
-      .sortBy{case (_, value) => value}
+    .map { case (key, values)   => (values.keySet, key) }
+      .sortBy{case (_, value)   => value}
   }
 
 }

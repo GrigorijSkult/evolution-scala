@@ -1,11 +1,11 @@
 package homeworks.basics
 
-import homeworks.basics.ThirdTaskControlStructures._
+import homeworks.basics.Task3._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class ThirdTaskControlStructuresTest  extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks  {
+class Task3Test  extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks  {
 
   /*
   *Several tests to cover the main calculation and input aspects

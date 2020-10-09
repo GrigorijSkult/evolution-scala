@@ -2,10 +2,10 @@ package homeworks.basics
 
 import scala.io.Source
 
-object ThirdTaskControlStructures {
+object Task3 {
 
   /*
-  * Homework
+  * Homework: ControlStructures
   *
   * Create a command line application that reads various "commands" from the
   * stdin, evaluates them, and writes output to stdout.
@@ -49,7 +49,7 @@ object ThirdTaskControlStructures {
   final case class CalculationResult(operation: Command, value:Double) extends Result
 
   def parseCommand(x: String): Either[ErrorMessage, Command] = {
-    import homeworks.basics.ThirdTaskControlStructures.Command._
+    import homeworks.basics.Task3.Command._
     x.trim.replaceAll(" +", " ").split(" ").toList match {
       case Nil | _ :: Nil                           => Left(ErrorMessage("Error: Not enough data for calculation"))
       case _ :: xs
@@ -70,7 +70,7 @@ object ThirdTaskControlStructures {
   }
 
   def calculate(x: Command): Either[ErrorMessage, Result] = {
-    import homeworks.basics.ThirdTaskControlStructures.Command._
+    import homeworks.basics.Task3.Command._
     x match {
       case Divide(dividend, divisor)      => divisor match {
         case 0                            => Left(ErrorMessage("Error: division by zero is prohibited"))
@@ -85,7 +85,7 @@ object ThirdTaskControlStructures {
   }
 
   def renderResult(x: Result): String = {
-    import homeworks.basics.ThirdTaskControlStructures.Command._
+    import homeworks.basics.Task3.Command._
     x match {
       case CalculationResult(operation, result)   =>
         operation match {

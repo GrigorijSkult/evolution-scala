@@ -1,6 +1,6 @@
 package homeworks.basics
 
-object FirstTask {
+object Task1 {
 
   /*
   * The calculation algorithms were taken from:

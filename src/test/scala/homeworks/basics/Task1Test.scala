@@ -1,11 +1,11 @@
 package homeworks.basics
 
-import homeworks.basics.FirstTask._
+import homeworks.basics.Task1._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class FirstTaskTest extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks {
+class Task1Test extends AnyFlatSpec with ScalaCheckDrivenPropertyChecks {
 
   "Positive greatest common divisor" should "be correct" in {
     gcd(1, 10) shouldEqual 1
