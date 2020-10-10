@@ -46,7 +46,7 @@ object Task3 {
   final case class ErrorMessage(value: String)
 
   sealed trait Result
-  final case class CalculationResult(operation: Command, value:Double) extends Result
+  case class CalculationResult(operation: Command, value:Double) extends Result
 
   def parseCommand(x: String): Either[ErrorMessage, Command] = {
     import homeworks.basics.Task3.Command._
@@ -96,6 +96,7 @@ object Task3 {
           case Max(numbers)                   => f"the max of ${numbers.mkString(" ")} is $result"
           case _                              => "Error: Invalid operation command"
         }
+      case _                                  => "Error: Invalid render operation"
     }
   }
 
