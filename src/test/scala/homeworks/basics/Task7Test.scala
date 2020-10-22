@@ -9,22 +9,19 @@ import org.scalatest.matchers.should.Matchers
 
 class Task7Test extends AnyFreeSpec with Matchers {
 
+  val yearTwoLastDigits: String = java.time.Year.now().getValue.toString.takeRight(2)
+
   "CardValidation" - {
     "be valid" in {
-      PaymentCardValidator.validate("Gregory", "1231231215426154", "12/25", "000") shouldBe
-        PaymentCard("Gregory", "1231231215426154", "12/25", "000").validNec
+      PaymentCardValidator.validate("Gregory", "1231231215426154", "12/" + yearTwoLastDigits, "000") shouldBe
+      PaymentCard("Gregory", "1231231215426154", "12/" + yearTwoLastDigits, "000").validNec
     }
 
-    "be invalid I" in {
-      PaymentCardValidator.validate("X", "0", "21/21", "Vladimir") shouldBe
-        (CardNameLengthError, CardNumberLengthError, CardExpirationDateMonthNumeralsError, CardSecurityCodeLengthError).invalidNec
+    "be invalid" in {
+      PaymentCardValidator.validate("X", "0", "21/" + (java.time.Year.now().getValue - 1).toString.takeRight(2), "Vladimir").toString shouldBe
+      "Invalid(Chain(CardNameLengthError, CardNumberLengthError, CardExpirationDateMonthNumeralsError, CardExpirationDateYearNumeralsError, CardSecurityCodeLengthError, CardSecurityCodeNumeralsError))"
+      //        (CardNameLengthError, CardNumberLengthError, CardExpirationDateMonthNumeralsError, CardSecurityCodeLengthError).invalidNec // space problem
     }
-
-    "be invalid II" in {
-      PaymentCardValidator.validate("Xh%", "12312312154261549", "2/21", "01") shouldBe
-        (CardNameSpecialSymbolsError, CardNumberLengthError, CardExpirationDateFormatError, CardSecurityCodeLengthError).invalidNec
-    }
-
   }
 
   "CardNameValidation" - {
@@ -67,25 +64,26 @@ class Task7Test extends AnyFreeSpec with Matchers {
     }
   }
 
+
   "CardExpirationDayValidation" - {
     "valid format" in {
-      PaymentCardValidator.validateCardExpirationDay("12/21") shouldBe "12/21".validNec
+      PaymentCardValidator.validateCardExpirationDay("12/" + yearTwoLastDigits) shouldBe ("12/" + yearTwoLastDigits).validNec
     }
 
     "invalid short format" in {
-      PaymentCardValidator.validateCardExpirationDay("1/21") shouldBe CardExpirationDateFormatError.invalidNec
+      PaymentCardValidator.validateCardExpirationDay("1/"  + yearTwoLastDigits) shouldBe CardExpirationDateFormatError.invalidNec
     }
 
     "invalid long format" in {
-      PaymentCardValidator.validateCardExpirationDay("126/21") shouldBe CardExpirationDateFormatError.invalidNec
+      PaymentCardValidator.validateCardExpirationDay("126/" + yearTwoLastDigits) shouldBe CardExpirationDateFormatError.invalidNec
     }
 
     "invalid month format" in {
-      PaymentCardValidator.validateCardExpirationDay("19/21") shouldBe CardExpirationDateMonthNumeralsError.invalidNec
+      PaymentCardValidator.validateCardExpirationDay("19/" + yearTwoLastDigits) shouldBe CardExpirationDateMonthNumeralsError.invalidNec
     }
 
     "invalid year format" in {
-//      PaymentCardValidator.validateCardExpirationDay("12/12") shouldBe CardExpirationDateMonthNumeralsError.invalidNec
+      PaymentCardValidator.validateCardExpirationDay("12/" + (java.time.Year.now().getValue - 1).toString.takeRight(2)) shouldBe CardExpirationDateYearNumeralsError.invalidNec
     }
   }
 

@@ -50,6 +50,10 @@ object Task7 {
         def errorMessage: String = "Card expiration date month value should be as numeral from 1 to 12"
       }
 
+      final case object CardExpirationDateYearNumeralsError extends ValidationError {
+        def errorMessage: String = "Card expiration year couldnt be from the past"
+      }
+
       final case object CardSecurityCodeLengthError extends ValidationError {
         def errorMessage: String = "Card security code should contain 3 numerals"
       }
@@ -75,11 +79,11 @@ object Task7 {
         }
 
         def validateCardNameSpecialSymbols(name: String): AllErrorsOr[String] = {
-          if (name.matches("^[a-zA-Z]+$")) name.validNec
+          if (name.matches("^[a-zA-Z ]+$")) name.validNec
           else CardNameSpecialSymbolsError.invalidNec
         }
 
-        validateCardNameLength andThen validateCardNameSpecialSymbols
+        validateCardNameLength productR validateCardNameSpecialSymbols(name)
       }
 
       def validateCardNumber(number: String): AllErrorsOr[String] = {
@@ -93,14 +97,14 @@ object Task7 {
           else CardNumberNumeralsError.invalidNec
         }
 
-        validateCardNameLength andThen validateCardNameSpecialSymbols
+        validateCardNameLength productR validateCardNameSpecialSymbols(number)
       }
 
       def validateCardExpirationDay(expirationDate: String): AllErrorsOr[String] = {
         val dateTrimmed = expirationDate.trim.replaceAll("\\s", "")
 
         def validateExpirationDateFormat: AllErrorsOr[String] = {
-          if (dateTrimmed.matches("\\d{2}(\\/|-)\\d{2}")) dateTrimmed.validNec
+          if (dateTrimmed.matches("\\d{2}(\\/|-)\\d{2}") && dateTrimmed.length == 5) dateTrimmed.validNec
           else CardExpirationDateFormatError.invalidNec
         }
 
@@ -114,9 +118,8 @@ object Task7 {
           }
 
           def validateYear(year: Int): AllErrorsOr[String] = {
-//                          if (year < /*actual year*/) year.toString.validNec
-//                          else CardExpirationDateMonthNumeralsError.invalidNec
-            year.toString.validNec//kostilj(crutch)
+            if (year >= java.time.Year.now().toString.takeRight(2).toInt) year.toString.validNec
+            else CardExpirationDateYearNumeralsError.invalidNec
           }
 
           (validateMonth(month), validateYear(year)).mapN((month, year) => s"$month/$year")
@@ -136,7 +139,7 @@ object Task7 {
           else CardSecurityCodeNumeralsError.invalidNec
         }
 
-        validateCardSecurityCodeLength andThen validateCardSecurityCodeNumerals
+        validateCardSecurityCodeLength productR validateCardSecurityCodeNumerals(securityCode)
       }
 
       def validate(
@@ -149,7 +152,7 @@ object Task7 {
           validateCardNumber(number),
           validateCardExpirationDay(expirationDate),
           validateCardSecurityCode(securityCode)
-          ).mapN (PaymentCard)
+          ).mapN(PaymentCard)
       }
     }
 
