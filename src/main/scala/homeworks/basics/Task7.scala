@@ -16,16 +16,56 @@ object Task7 {
 
   object Homework {
 
-    case class PaymentCard(name: String,
-                           number: String,
-                           expirationDate: String,
-                           securityCode: String,
+    sealed trait Month{
+      val month: String
+    }
+    object Month{
+      final case object January extends Month {val month: String = "01"}
+      final case object February extends Month{val month: String = "02"}
+      final case object March extends Month {val month: String = "03"}
+      final case object April extends Month {val month: String = "04"}
+      final case object May extends Month {val month: String = "05"}
+      final case object June extends Month {val month: String = "06"}
+      final case object July extends Month {val month: String = "07"}
+      final case object August extends Month {val month: String = "08"}
+      final case object September extends Month {val month: String = "09"}
+      final case object October extends Month {val month: String = "10"}
+      final case object November extends Month {val month: String = "11"}
+      final case object December extends Month {val month: String = "12"}
+
+      def mapper(month: String): Month = month match {
+        case January.month   => January
+        case February.month  => February
+        case March.month     => March
+        case April.month     => April
+        case May.month       => May
+        case June.month      => June
+        case July.month      => July
+        case August.month    => August
+        case September.month => September
+        case October.month   => October
+        case November.month  => November
+        case December.month  => December
+      }
+    }
+    final case class Year(year: Int) extends AnyVal
+
+    final case class PaymentCardName(name: String) extends AnyVal
+    final case class PaymentCardNumber(number: String) extends AnyVal
+    final case class PaymentCardExpirationDate(month: Month, year: Year)
+    final case class PaymentCardSecurityCode(securityCode:String) extends AnyVal
+
+    case class PaymentCard(name: PaymentCardName,
+                           number: PaymentCardNumber,
+                           expirationDate: PaymentCardExpirationDate,
+                           securityCode: PaymentCardSecurityCode,
                           )
 
     sealed trait ValidationError
 
     object ValidationError {
 
+      //Card Name Errors
       final case object CardNameLengthError extends ValidationError {
         def errorMessage: String = "Card name should contain from 3 to 20 symbols"
       }
@@ -34,6 +74,7 @@ object Task7 {
         def errorMessage: String = "Card name can`t contain special symbols"
       }
 
+      //Card Number Errors
       final case object CardNumberLengthError extends ValidationError {
         def errorMessage: String = "Card numbers should contain 16 numerals"
       }
@@ -42,6 +83,7 @@ object Task7 {
         def errorMessage: String = "Card numbers should contain only integer digits"
       }
 
+      //Card Expiration Date Errors
       final case object CardExpirationDateFormatError extends ValidationError {
         def errorMessage: String = "Card expiration date should be in format of MM/YY"
       }
@@ -54,6 +96,7 @@ object Task7 {
         def errorMessage: String = "Card expiration year couldnt be from the past"
       }
 
+      //Card Security Code Errors
       final case object CardSecurityCodeLengthError extends ValidationError {
         def errorMessage: String = "Card security code should contain 3 numerals"
       }
@@ -61,7 +104,6 @@ object Task7 {
       final case object CardSecurityCodeNumeralsError extends ValidationError {
         def errorMessage: String = "Card security code should contain only integer digits"
       }
-
     }
 
     object PaymentCardValidator {
@@ -72,70 +114,78 @@ object Task7 {
 
       type AllErrorsOr[A] = ValidatedNec[ValidationError, A]
 
-      def validateCardName(name: String): AllErrorsOr[String] = {
-        def validateCardNameLength: AllErrorsOr[String] = {
-          if (name.length > 2 && name.length < 21) name.validNec
+      def validateCardName(name: String): AllErrorsOr[PaymentCardName] = {
+        def validateCardNameLength: AllErrorsOr[PaymentCardName] = {
+          if (name.length > 2 && name.length < 21) PaymentCardName(name).validNec
           else CardNameLengthError.invalidNec
         }
 
-        def validateCardNameSpecialSymbols(name: String): AllErrorsOr[String] = {
-          if (name.matches("^[a-zA-Z ]+$")) name.validNec
+        def validateCardNameSpecialSymbols(name: String): AllErrorsOr[PaymentCardName] = {
+          if (name.matches("^[a-zA-Z ]+$")) PaymentCardName(name).validNec
           else CardNameSpecialSymbolsError.invalidNec
         }
 
         validateCardNameLength productR validateCardNameSpecialSymbols(name)
       }
 
-      def validateCardNumber(number: String): AllErrorsOr[String] = {
-        def validateCardNameLength: AllErrorsOr[String] = {
-          if (number.length == 16) number.validNec
+      def validateCardNumber(number: String): AllErrorsOr[PaymentCardNumber] = {
+        def validateCardNameLength: AllErrorsOr[PaymentCardNumber] = {
+          if (number.length == 16) PaymentCardNumber(number).validNec
           else CardNumberLengthError.invalidNec
         }
 
-        def validateCardNameSpecialSymbols(number: String): AllErrorsOr[String] = {
-          if (number.forall(_.isDigit)) number.validNec
+        def validateCardNameSpecialSymbols(number: String): AllErrorsOr[PaymentCardNumber] = {
+          if (number.forall(_.isDigit)) PaymentCardNumber(number).validNec
           else CardNumberNumeralsError.invalidNec
         }
 
         validateCardNameLength productR validateCardNameSpecialSymbols(number)
       }
 
-      def validateCardExpirationDay(expirationDate: String): AllErrorsOr[String] = {
-        val dateTrimmed = expirationDate.trim.replaceAll("\\s", "")
+      def validateCardExpirationDay(expirationDate: String): AllErrorsOr[PaymentCardExpirationDate] = {
+        val dateTrimmed: String = expirationDate.trim.replaceAll("\\s", "")
 
         def validateExpirationDateFormat: AllErrorsOr[String] = {
           if (dateTrimmed.matches("\\d{2}(\\/|-)\\d{2}") && dateTrimmed.length == 5) dateTrimmed.validNec
           else CardExpirationDateFormatError.invalidNec
         }
 
-        def validateMonthAndYear(date: String): AllErrorsOr[String] = {
-          val month = date.take(2).toInt
-          val year = date.takeRight(2).toInt
+        def validateMonthAndYear(data: String): AllErrorsOr[PaymentCardExpirationDate] = {
+          val month = data.take(2).toInt
+          val year = data.takeRight(2).toInt
 
-          def validateMonth(month: Int): AllErrorsOr[String] = {
-            if (month > 0 && month < 13) month.toString.validNec
+          def validateMonth(month: Int): AllErrorsOr[Month] = {
+            if (month > 0 && month < 13) Month.mapper(month.toString).validNec
             else CardExpirationDateMonthNumeralsError.invalidNec
           }
 
-          def validateYear(year: Int): AllErrorsOr[String] = {
-            if (year >= java.time.Year.now().toString.takeRight(2).toInt) year.toString.validNec
+          def validateYear(year: Int): AllErrorsOr[Year] = {
+            if (year >= java.time.Year.now().toString.takeRight(2).toInt) Year(year).validNec
             else CardExpirationDateYearNumeralsError.invalidNec
           }
 
-          (validateMonth(month), validateYear(year)).mapN((month, year) => s"$month/$year")
+          if (validateMonth(month).isValid){
+            if (validateYear(year).isValid){
+              PaymentCardExpirationDate(validateMonth(month).toOption.get, validateYear(year).toOption.get).validNec
+            }else {
+              CardExpirationDateYearNumeralsError.invalidNec
+            }
+          }else {
+            CardExpirationDateMonthNumeralsError.invalidNec
+          }
         }
 
         validateExpirationDateFormat andThen validateMonthAndYear
       }
 
-      def validateCardSecurityCode(securityCode: String): AllErrorsOr[String] = {
-        def validateCardSecurityCodeLength: AllErrorsOr[String] = {
-          if (securityCode.length == 3) securityCode.validNec
+      def validateCardSecurityCode(securityCode: String): AllErrorsOr[PaymentCardSecurityCode] = {
+        def validateCardSecurityCodeLength: AllErrorsOr[PaymentCardSecurityCode] = {
+          if (securityCode.length == 3) PaymentCardSecurityCode(securityCode).validNec
           else CardSecurityCodeLengthError.invalidNec
         }
 
-        def validateCardSecurityCodeNumerals(number: String): AllErrorsOr[String] = {
-          if (number.forall(_.isDigit)) number.validNec
+        def validateCardSecurityCodeNumerals(number: String): AllErrorsOr[PaymentCardSecurityCode] = {
+          if (number.forall(_.isDigit)) PaymentCardSecurityCode(securityCode).validNec
           else CardSecurityCodeNumeralsError.invalidNec
         }
 
@@ -155,7 +205,6 @@ object Task7 {
           ).mapN(PaymentCard)
       }
     }
-
   }
 
 }

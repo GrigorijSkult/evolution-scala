@@ -13,20 +13,20 @@ class Task7Test extends AnyFreeSpec with Matchers {
 
   "CardValidation" - {
     "be valid" in {
-      PaymentCardValidator.validate("Gregory", "1231231215426154", "12/" + yearTwoLastDigits, "000") shouldBe
-      PaymentCard("Gregory", "1231231215426154", "12/" + yearTwoLastDigits, "000").validNec
+      PaymentCardValidator.validate("Gregory ", "1231231215426154", "12/" + yearTwoLastDigits, "000") shouldBe
+      PaymentCard(PaymentCardName("Gregory "), PaymentCardNumber("1231231215426154"), PaymentCardExpirationDate(Month.mapper("12"), Year(yearTwoLastDigits.toInt)), PaymentCardSecurityCode("000")).validNec
     }
 
     "be invalid" in {
-      PaymentCardValidator.validate("X", "0", "21/" + (java.time.Year.now().getValue - 1).toString.takeRight(2), "Vladimir").toString shouldBe
-      "Invalid(Chain(CardNameLengthError, CardNumberLengthError, CardExpirationDateMonthNumeralsError, CardExpirationDateYearNumeralsError, CardSecurityCodeLengthError, CardSecurityCodeNumeralsError))"
-      //        (CardNameLengthError, CardNumberLengthError, CardExpirationDateMonthNumeralsError, CardSecurityCodeLengthError).invalidNec // space problem
+      PaymentCardValidator.validate("X", "0", ("21/" + (java.time.Year.now().getValue - 1).toString.takeRight(2)), "Vladimir").toString shouldBe
+        "Invalid(Chain(CardNameLengthError, CardNumberLengthError, CardExpirationDateMonthNumeralsError, CardSecurityCodeLengthError, CardSecurityCodeNumeralsError))"
+//              (CardNameLengthError, CardNumberLengthError, CardExpirationDateMonthNumeralsError, CardSecurityCodeLengthError).invalidNec.toString.replaceAll(" ", "") // space problem
     }
   }
 
   "CardNameValidation" - {
     "valid length" in {
-      PaymentCardValidator.validateCardName("Gregory") shouldBe "Gregory".validNec
+      PaymentCardValidator.validateCardName("Gregory") shouldBe PaymentCardName("Gregory").validNec
     }
 
     "invalid short length" in {
@@ -44,7 +44,7 @@ class Task7Test extends AnyFreeSpec with Matchers {
 
   "CardNumberValidation" - {
     "valid length" in {
-      PaymentCardValidator.validateCardNumber("1231231215426154") shouldBe "1231231215426154".validNec
+      PaymentCardValidator.validateCardNumber("1231231215426154") shouldBe PaymentCardNumber("1231231215426154").validNec
     }
 
     "invalid short length" in {
@@ -67,7 +67,7 @@ class Task7Test extends AnyFreeSpec with Matchers {
 
   "CardExpirationDayValidation" - {
     "valid format" in {
-      PaymentCardValidator.validateCardExpirationDay("12/" + yearTwoLastDigits) shouldBe ("12/" + yearTwoLastDigits).validNec
+      PaymentCardValidator.validateCardExpirationDay("12/" + yearTwoLastDigits) shouldBe (PaymentCardExpirationDate(Month.December, Year(yearTwoLastDigits.toInt))).validNec
     }
 
     "invalid short format" in {
@@ -89,7 +89,7 @@ class Task7Test extends AnyFreeSpec with Matchers {
 
   "CardSecurityCodeValidation" - {
     "valid length" in {
-      PaymentCardValidator.validateCardSecurityCode("000") shouldBe "000".validNec
+      PaymentCardValidator.validateCardSecurityCode("000") shouldBe PaymentCardSecurityCode("000").validNec
     }
 
     "invalid short length" in {
