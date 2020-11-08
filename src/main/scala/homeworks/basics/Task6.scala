@@ -1,8 +1,8 @@
 package homeworks.basics
 
+import scala.annotation.tailrec
 import scala.collection.immutable.ArraySeq
 import scala.collection.mutable
-import scala.util.Try
 
 object Task6 {
 
@@ -59,6 +59,7 @@ object Task6 {
       private val map = mutable.LinkedHashMap.empty[K, V]
       private var mapSizeScore: SizeScore = 0
 
+      @tailrec
       def put(key: K, value: V): Unit = {
         val sumOfSizes = key.sizeScore + value.sizeScore
         if (mapSizeScore + sumOfSizes <= maxSizeScore) {
@@ -75,7 +76,7 @@ object Task6 {
         }
       }
 
-      def get(key: K): Option[V] = Try(map(key)).toOption
+      def get(key: K): Option[V] = map.get(key)
     }
 
     /**
